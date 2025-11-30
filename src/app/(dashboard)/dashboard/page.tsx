@@ -1,9 +1,13 @@
 import type { ReactNode } from "react"
 
 import { KpiCards } from "@/components/dashboard/kpi-cards"
+import { LineChart } from "@/components/dashboard/line-chart"
 import { kpis } from "@/content/kpis"
+import { revenueTimeseries } from "@/content/timeseries"
 
-const SHOW_EMPTY_STATE = false
+const SHOW_KPI_EMPTY_STATE = false
+const SHOW_CHART_EMPTY_STATE = false
+const SHOW_CHART_ERROR_STATE = false
 
 export default function DashboardOverviewPage() {
   return (
@@ -21,14 +25,17 @@ export default function DashboardOverviewPage() {
         </p>
       </section>
 
-      <KpiCards items={kpis} showEmptyState={SHOW_EMPTY_STATE} />
+      <KpiCards items={kpis} showEmptyState={SHOW_KPI_EMPTY_STATE} />
 
-      <section className="grid gap-6 lg:grid-cols-2">
-        <PlaceholderCard title="Chart placeholder">
-          Step 05 will replace this block with the timeline chart.
-        </PlaceholderCard>
+      <section className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+        <LineChart
+          data={revenueTimeseries}
+          simulateEmpty={SHOW_CHART_EMPTY_STATE}
+          simulateError={SHOW_CHART_ERROR_STATE}
+        />
         <PlaceholderCard title="Table placeholder">
-          Step 06 introduces the data table. Focus on KPIs for now.
+          Step 06 will bring the interactive data table. Until then, this block
+          holds the space so the layout stays predictable.
         </PlaceholderCard>
       </section>
     </div>

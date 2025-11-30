@@ -21,10 +21,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         <div className="flex min-h-screen flex-col">
           <Topbar />
 
-          <div className="border-b border-slate-200 bg-white lg:hidden">
-            <Sidebar variant="mobile" />
-          </div>
-
           <main
             id="dashboard-main"
             className="flex-1 px-4 py-8 sm:px-6 lg:px-10"

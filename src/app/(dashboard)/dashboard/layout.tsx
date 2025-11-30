@@ -10,9 +10,11 @@ interface DashboardLayoutProps {
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
-      <a className="skip-link" href="#dashboard-main">
-        Skip to main content
-      </a>
+      <div className="fixed left-1/2 top-4 z-50 -translate-x-1/2 px-4">
+        <a className="skip-link" href="#dashboard-main">
+          Skip to main content
+        </a>
+      </div>
       <div className="min-h-screen lg:grid lg:grid-cols-[280px_1fr]">
         <div className="hidden h-full bg-white lg:block">
           <Sidebar variant="desktop" />

@@ -47,3 +47,23 @@ body {
   border-radius: var(--radius-lg);
   border: 1px solid var(--border);
 }
+
+.skip-link {
+  position: absolute;
+  left: 1.5rem;
+  top: 1rem;
+  z-index: 50;
+  transform: translateY(-120%);
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm);
+  background-color: var(--foreground);
+  color: var(--background);
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+  outline: none;
+}

@@ -180,7 +180,7 @@ export function LineChart({
         ) : null}
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="relative px-10">
+        <div className="relative px-4 sm:px-6 lg:px-10">
           <svg
             ref={svgRef}
             role="img"
@@ -241,7 +241,7 @@ export function LineChart({
 
           {activePoint ? (
             <div
-              className="pointer-events-none absolute inset-x-10 top-0 h-full"
+              className="pointer-events-none absolute inset-x-4 top-0 h-full sm:inset-x-6 lg:inset-x-10"
               aria-hidden
             >
               <div
@@ -263,7 +263,7 @@ export function LineChart({
           ) : null}
         </div>
 
-        <div className="relative hidden px-10 text-xs font-semibold uppercase tracking-wide text-slate-400 md:block">
+        <div className="relative hidden px-4 text-xs font-semibold uppercase tracking-wide text-slate-400 sm:px-6 lg:px-10 md:block">
           <div className="relative h-5">
             {xAxisLabels.map((label, index) => (
               <span

@@ -25,7 +25,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             id="dashboard-main"
             className="flex-1 px-4 py-8 sm:px-6 lg:px-10"
           >
-            <div className="mx-auto w-full max-w-6xl">{children}</div>
+            <div className="w-full xl:max-w-6xl xl:mx-auto">{children}</div>
           </main>
         </div>
       </div>

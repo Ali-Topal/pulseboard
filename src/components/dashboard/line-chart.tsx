@@ -17,6 +17,7 @@ import { cn } from "@/lib/cn"
 
 const VIEWBOX_WIDTH = 720
 const VIEWBOX_HEIGHT = 260
+const CHART_PADDING = 30
 const LOADING_MS = 900
 
 type LineChartProps = {
@@ -64,10 +65,12 @@ export function LineChart({
   const points = useMemo(() => {
     if (!preparedData.length) return []
 
-    const step = VIEWBOX_WIDTH / Math.max(1, preparedData.length - 1)
+    const step =
+      (VIEWBOX_WIDTH - CHART_PADDING * 2) /
+      Math.max(1, preparedData.length - 1)
 
     return preparedData.map((point, index) => {
-      const x = index * step
+      const x = CHART_PADDING + index * step
       const normalizedY = (point.value - minValue) / yRange
       const y = VIEWBOX_HEIGHT - normalizedY * (VIEWBOX_HEIGHT - 40) - 20
       return { ...point, x, y }
@@ -98,7 +101,13 @@ export function LineChart({
       if (!svgRef.current || !points.length) return
       const { left, width } = svgRef.current.getBoundingClientRect()
       const relativeX = Math.max(0, Math.min(clientX - left, width))
-      const xRatio = relativeX / width
+      const viewboxX = (relativeX / width) * VIEWBOX_WIDTH
+      const clampedX = Math.max(
+        CHART_PADDING,
+        Math.min(VIEWBOX_WIDTH - CHART_PADDING, viewboxX),
+      )
+      const effectiveWidth = VIEWBOX_WIDTH - CHART_PADDING * 2
+      const xRatio = (clampedX - CHART_PADDING) / effectiveWidth
       const index = Math.round(xRatio * (points.length - 1))
       setActiveIndex(index)
     },
@@ -135,18 +144,30 @@ export function LineChart({
     )
   }
 
+  const peakPoint =
+    points.find((point) => point.value === maxValue) ?? points[0]
+  const lowPoint =
+    points.find((point) => point.value === minValue) ?? points[0]
+
+  const xAxisLabels = preparedData.map((point, index) => ({
+    label: new Intl.DateTimeFormat("en-US", { month: "short" }).format(
+      new Date(point.date),
+    ),
+    x: points[index]?.x ?? 0,
+  }))
+
   return (
     <Card className="h-full">
       <CardHeader className="space-y-2">
+        <CardTitle className="text-slate-900 dark:text-slate-50">
+          {title}
+        </CardTitle>
         <div className="flex items-center gap-3">
           <Badge variant="neutral">12 mo</Badge>
           <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-300">
             {subtitle}
           </span>
         </div>
-        <CardTitle className="text-slate-900 dark:text-slate-50">
-          {title}
-        </CardTitle>
         {activePoint ? (
           <p className="text-sm text-slate-500 dark:text-slate-300">
             {formatMonth(activePoint.date)} • {formatValue(activePoint.value, unit)}
@@ -154,12 +175,13 @@ export function LineChart({
         ) : null}
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="relative">
+        <div className="relative px-10">
           <svg
             ref={svgRef}
             role="img"
             aria-label={`${title} line chart`}
             viewBox={`0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}`}
+            preserveAspectRatio="none"
             className="h-[260px] w-full"
             onMouseMove={(event) => handlePointerMove(event.clientX)}
             onTouchMove={(event) =>
@@ -197,8 +219,16 @@ export function LineChart({
                 cx={point.x}
                 cy={point.y}
                 r={index === activeIndex ? 6 : 4}
-                fill={index === activeIndex ? "#0f172a" : "#94a3b8"}
-                opacity={index === activeIndex ? 1 : 0.6}
+                fill={
+                  index === activeIndex
+                    ? "#0f172a"
+                    : point.id === peakPoint?.id
+                      ? "#10b981"
+                      : point.id === lowPoint?.id
+                        ? "#f43f5e"
+                        : "#94a3b8"
+                }
+                opacity={index === activeIndex ? 1 : 0.9}
                 aria-hidden
               />
             ))}
@@ -206,7 +236,7 @@ export function LineChart({
 
           {activePoint ? (
             <div
-              className="pointer-events-none absolute left-0 top-0 h-full w-full"
+              className="pointer-events-none absolute left-10 right-10 top-0 h-full"
               aria-hidden
             >
               <div
@@ -228,16 +258,39 @@ export function LineChart({
           ) : null}
         </div>
 
+        <div
+          className="px-10 grid gap-0 text-xs font-semibold uppercase tracking-wide text-slate-400"
+          style={{
+            gridTemplateColumns: `repeat(${Math.max(
+              xAxisLabels.length,
+              1,
+            )}, minmax(0, 1fr))`,
+          }}
+        >
+          {xAxisLabels.map((label, index) => (
+            <span
+              key={`${label.label}-${index}`}
+              className={cn(
+                "text-center",
+                index === 0 && "text-left pl-8",
+                index === xAxisLabels.length - 1 && "text-right pr-9",
+              )}
+            >
+              {label.label}
+            </span>
+          ))}
+        </div>
+
         <div className="flex flex-wrap items-center gap-4 text-sm text-slate-500">
           <LegendItem
             label="Peak"
             value={formatValue(maxValue, unit)}
-            dotClassName="bg-slate-900"
+            dotClassName="bg-emerald-500"
           />
           <LegendItem
             label="Low"
             value={formatValue(minValue, unit)}
-            dotClassName="bg-slate-400"
+            dotClassName="bg-rose-500"
           />
           <LegendItem
             label="Average"
@@ -308,7 +361,10 @@ function LegendItem({
     <div className="flex items-center gap-2">
       <span
         aria-hidden
-        className={cn("h-2.5 w-2.5 rounded-full bg-slate-500", dotClassName)}
+        className={cn(
+          "h-2.5 w-2.5 rounded-full",
+          dotClassName ?? "bg-slate-500",
+        )}
       />
       <span className="font-semibold text-slate-900 dark:text-slate-50">
         {value}

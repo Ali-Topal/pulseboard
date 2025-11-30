@@ -149,12 +149,17 @@ export function LineChart({
   const lowPoint =
     points.find((point) => point.value === minValue) ?? points[0]
 
-  const xAxisLabels = preparedData.map((point, index) => ({
-    label: new Intl.DateTimeFormat("en-US", { month: "short" }).format(
+  const xAxisLabels = preparedData.map((point) =>
+    new Intl.DateTimeFormat("en-US", { month: "short" }).format(
       new Date(point.date),
     ),
-    x: points[index]?.x ?? 0,
-  }))
+  )
+  const xAxisPositions = points.map((point) =>
+    Math.max(
+      4,
+      Math.min(96, (point.x / VIEWBOX_WIDTH) * 100),
+    ),
+  )
 
   return (
     <Card className="h-full">
@@ -236,7 +241,7 @@ export function LineChart({
 
           {activePoint ? (
             <div
-              className="pointer-events-none absolute left-10 right-10 top-0 h-full"
+              className="pointer-events-none absolute inset-x-10 top-0 h-full"
               aria-hidden
             >
               <div
@@ -258,27 +263,20 @@ export function LineChart({
           ) : null}
         </div>
 
-        <div
-          className="px-10 grid gap-0 text-xs font-semibold uppercase tracking-wide text-slate-400"
-          style={{
-            gridTemplateColumns: `repeat(${Math.max(
-              xAxisLabels.length,
-              1,
-            )}, minmax(0, 1fr))`,
-          }}
-        >
-          {xAxisLabels.map((label, index) => (
-            <span
-              key={`${label.label}-${index}`}
-              className={cn(
-                "text-center",
-                index === 0 && "text-left pl-8",
-                index === xAxisLabels.length - 1 && "text-right pr-9",
-              )}
-            >
-              {label.label}
-            </span>
-          ))}
+        <div className="relative hidden px-10 text-xs font-semibold uppercase tracking-wide text-slate-400 md:block">
+          <div className="relative h-5">
+            {xAxisLabels.map((label, index) => (
+              <span
+                key={`${label}-${index}`}
+                className="absolute -translate-x-1/2 whitespace-nowrap"
+                style={{
+                  left: `${xAxisPositions[index] ?? 0}%`,
+                }}
+              >
+                {label}
+              </span>
+            ))}
+          </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-4 text-sm text-slate-500">

@@ -74,21 +74,22 @@ export function LineChart({
     })
   }, [preparedData, minValue, yRange])
 
-  const pathDefinition = useMemo(() => {
+  const polylinePoints = useMemo(() => {
     if (!points.length) return ""
-    return points
-      .map((point, index) =>
-        index === 0 ? `M ${point.x} ${point.y}` : `L ${point.x} ${point.y}`,
-      )
-      .join(" ")
+    return points.map((point) => `${point.x},${point.y}`).join(" ")
   }, [points])
 
-  const areaDefinition = useMemo(() => {
+  const areaPolygonPoints = useMemo(() => {
     if (!points.length) return ""
     const first = points[0]
     const last = points[points.length - 1]
-    return `${pathDefinition} L ${last.x} ${VIEWBOX_HEIGHT} L ${first.x} ${VIEWBOX_HEIGHT} Z`
-  }, [pathDefinition, points])
+    const extended = [
+      ...points,
+      { x: last.x, y: VIEWBOX_HEIGHT },
+      { x: first.x, y: VIEWBOX_HEIGHT },
+    ]
+    return extended.map((point) => `${point.x},${point.y}`).join(" ")
+  }, [points])
 
   const activePoint = points[activeIndex] ?? points[points.length - 1]
 
@@ -139,13 +140,15 @@ export function LineChart({
       <CardHeader className="space-y-2">
         <div className="flex items-center gap-3">
           <Badge variant="neutral">12 mo</Badge>
-          <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+          <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-300">
             {subtitle}
           </span>
         </div>
-        <CardTitle>{title}</CardTitle>
+        <CardTitle className="text-slate-900 dark:text-slate-50">
+          {title}
+        </CardTitle>
         {activePoint ? (
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-slate-500 dark:text-slate-300">
             {formatMonth(activePoint.date)} • {formatValue(activePoint.value, unit)}
           </p>
         ) : null}
@@ -172,18 +175,19 @@ export function LineChart({
               </linearGradient>
             </defs>
 
-            <path
-              d={areaDefinition}
+            <polygon
+              points={areaPolygonPoints}
               fill="url(#chart-gradient)"
               opacity="0.6"
               aria-hidden
             />
-            <path
-              d={pathDefinition}
+            <polyline
+              points={polylinePoints}
               fill="none"
-              stroke="#0f172a"
+              stroke="#2563eb"
               strokeWidth={3}
               strokeLinecap="round"
+              strokeLinejoin="round"
               aria-hidden
             />
 
@@ -306,8 +310,10 @@ function LegendItem({
         aria-hidden
         className={cn("h-2.5 w-2.5 rounded-full bg-slate-500", dotClassName)}
       />
-      <span className="font-semibold text-slate-900">{value}</span>
-      <span>{label}</span>
+      <span className="font-semibold text-slate-900 dark:text-slate-50">
+        {value}
+      </span>
+      <span className="text-slate-500 dark:text-slate-200">{label}</span>
     </div>
   )
 }

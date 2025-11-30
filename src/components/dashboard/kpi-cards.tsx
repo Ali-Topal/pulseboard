@@ -67,13 +67,17 @@ export function KpiCards({ items, showEmptyState = false }: KpiCardsProps) {
   return (
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
       {items.map((item) => (
-        <Card key={item.id} className="h-full">
+        <Card key={item.id} className="flex h-full flex-col">
           <CardHeader>
-            <CardDescription>{item.caption}</CardDescription>
-            <CardTitle>{item.label}</CardTitle>
+            <CardDescription className="text-slate-500 dark:text-slate-300">
+              {item.caption}
+            </CardDescription>
+            <CardTitle className="text-slate-900 dark:text-slate-50">
+              {item.label}
+            </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-3xl font-semibold text-slate-900">
+          <CardContent className="mt-auto space-y-4">
+            <p className="text-3xl font-semibold text-slate-900 dark:text-white">
               {formatKpiValue(item)}
             </p>
             <div className="flex items-center gap-2">
@@ -116,7 +120,7 @@ function TrendBadge({
       variant={variant}
       className={cn(
         "flex items-center gap-1 uppercase tracking-wide",
-        trend === "flat" && "text-slate-700",
+        trend === "flat" && "text-slate-700 dark:text-slate-300",
       )}
     >
       <span aria-hidden>{trendIcon(trend)}</span>

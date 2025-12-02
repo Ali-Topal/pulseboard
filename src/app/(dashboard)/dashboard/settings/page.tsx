@@ -1,26 +1,29 @@
+import { DangerZone } from "@/components/dashboard/settings/danger-zone"
+import { PreferencesForm } from "@/components/dashboard/settings/preferences-form"
+import { ProfileForm } from "@/components/dashboard/settings/profile-form"
+
 export default function DashboardSettingsPage() {
   return (
-    <section className="space-y-6">
-      <header className="space-y-2">
+    <div className="space-y-10">
+      <section className="space-y-2">
         <p className="text-sm font-semibold uppercase tracking-wider text-slate-500">
-          Step 03
+          Settings
         </p>
         <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-          Settings placeholder
+          Manage your account
         </h1>
         <p className="text-base text-slate-600">
-          Sidebar navigation now routes between overview and settings. Replace
-          this copy with the actual settings forms in Step 07.
+          Update personal details, adjust notification preferences, and handle
+          sensitive account actions.
         </p>
-      </header>
+      </section>
 
-      <div className="rounded-2xl border border-dashed border-slate-200 bg-white/70 p-6 text-sm text-slate-600 shadow-inner">
-        <p>
-          Use this stub to validate navigation state, mobile drawer focus
-          traps, and keyboard loops. The real settings experience arrives later.
-        </p>
+      <div className="space-y-10">
+        <ProfileForm />
+        <PreferencesForm />
+        <DangerZone />
       </div>
-    </section>
+    </div>
   )
 }
 
